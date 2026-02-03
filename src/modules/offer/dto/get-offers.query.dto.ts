@@ -1,9 +1,9 @@
 export class GetOffersQueryDto {
-    industries?: number[];
-    category?: number[];
-    subcategory?: number[];
-    skills?: number[];
-    specialties?: number[];
+    industries?: number | string;
+    category?: number | string;
+    subcategory?: number | string;
+    skills?: number | string;
+    specialties?: number | string;
     sort?: '1' | '-1';
     page?: string;
   }

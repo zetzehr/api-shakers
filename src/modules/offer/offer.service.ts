@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, PipelineStage } from 'mongoose';
 import { Offer } from './offer.schema';
 import { GetOffersQueryDto } from './dto/get-offers.query.dto';
+import { parseToNumberArray } from 'src/utils';
 
 @Injectable()
 export class OfferService {
@@ -13,46 +14,43 @@ export class OfferService {
 
   async getOffers(query: GetOffersQueryDto) {
     const {
-      industries = [],
-      category = [],
-      subcategory = [],
-      skills = [],
-      specialties = [],
+      industries,
+      category,
+      subcategory,
+      skills,
+      specialties,
       sort = '1',
       page = '1',
     } = query;
-
+  
     const pageNum = Math.max(parseInt(page, 10) || 1, 1);
     const limit = 10;
     const skip = (pageNum - 1) * limit;
     const sortNum: 1 | -1 = sort === '1' ? -1 : 1;
-
+  
+    const industriesArr = parseToNumberArray(industries);
+    const categoryArr = parseToNumberArray(category);
+    const subcategoryArr = parseToNumberArray(subcategory);
+    const skillsArr = parseToNumberArray(skills);
+    const specialtiesArr = parseToNumberArray(specialties);
+  
     const match: any = {};
-
-    if (industries.length) match['organization.industry'] = { $in: industries };
-
-    if (category.length) match.category = { $in: category };
-    if (subcategory.length) match.subcategory = { $in: subcategory };
-
-    if (skills.length || specialties.length) {
-      const elemMatch: any = {};
-      if (skills.length) elemMatch.skills = { $in: skills.map(Number) };
-      if (specialties.length)
-        elemMatch.specialties = { $in: specialties.map(Number) };
-
-      match.positions = { $elemMatch: elemMatch };
-    }
-
+    if (industriesArr.length) match['organization.industry'] = { $in: industriesArr };
+    if (categoryArr.length) match.category = { $in: categoryArr };
+    if (subcategoryArr.length) match.subcategory = { $in: subcategoryArr };
+    if (skillsArr.length) match['positions.skills'] = { $in: skillsArr };
+    if (specialtiesArr.length) match['positions.specialties'] = { $in: specialtiesArr };
+  
     const pipeline: PipelineStage[] = [
       { $match: match },
       { $sort: { creationDate: sortNum } },
       { $skip: skip },
       { $limit: limit },
     ];
-
+  
     const content = await this.offerModel.aggregate(pipeline);
     const totalCount = await this.offerModel.countDocuments(match);
-
+  
     return {
       page: pageNum,
       limit,
@@ -61,4 +59,8 @@ export class OfferService {
       content,
     };
   }
+  
+  
+  
+  
 }
