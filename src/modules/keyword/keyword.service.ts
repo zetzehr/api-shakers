@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Keyword, KeywordSchema } from './keyword.schema';
 
-
 @Injectable()
 export class KeywordService {
   constructor(
@@ -24,7 +23,6 @@ export class KeywordService {
         },
       },
     ]);
-
     return result[0] || {};
   }
 }

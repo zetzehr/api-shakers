@@ -1,3 +1,5 @@
+import { IsMongoId } from 'class-validator';
+
 export class GetOffersQueryDto {
     industries?: number | string;
     category?: number | string;
@@ -8,3 +10,7 @@ export class GetOffersQueryDto {
     page?: string;
   }
   
+  export class GetOfferById {
+    @IsMongoId()
+    id: string;
+  }

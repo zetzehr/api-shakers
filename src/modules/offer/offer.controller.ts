@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { OfferService } from './offer.service';
-import { GetOffersQueryDto } from './dto/get-offers.query.dto';
+import { GetOfferById, GetOffersQueryDto } from './dto/get-offers.query.dto';
 
 @Controller('offer')
 export class OfferController {
@@ -9,5 +9,10 @@ export class OfferController {
   @Get('getOffers')
   getOffers(@Query() query: GetOffersQueryDto) {
     return this.offerService.getOffers(query);
+  }
+
+  @Get('getOfferById')
+  getOfferById(@Query() query: GetOfferById) {
+    return this.offerService.getOfferById(query);
   }
 }
